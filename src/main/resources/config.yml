@@ -1,3 +1,5 @@
+
 autoclick:
   blocks-of-range: 10
   damage: 2
+  time-of-click: 1
