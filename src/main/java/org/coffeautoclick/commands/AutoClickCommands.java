@@ -1,5 +1,6 @@
 package org.coffeautoclick.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.coffeautoclick.Coffe_Autoclick;
 
 public class AutoClickCommands implements CommandExecutor {
@@ -25,11 +27,19 @@ public class AutoClickCommands implements CommandExecutor {
             if (cmd.getName().equalsIgnoreCase("autoclick")) {
                 if (p.hasPermission("autoclick.use")) {
                     if (args.length > 0 && args[0].equalsIgnoreCase("use")) {
+
                         double d = config.getDouble("autoclick.blocks-of-range");
+
                         double dmg = config.getDouble("autoclick.damage");
+
                         p.sendMessage(ChatColor.GREEN + "Hitando...");
+
                         int time = config.getInt("autoclick.time-of-click");
-                        new BukkitRunnable() {
+
+                        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+
+                        scheduler.runTaskTimer(Coffe_Autoclick.getInstance(), new Runnable(){
+
                             @Override
                             public void run() {
                                 for (Entity target : p.getNearbyEntities(d, d, d)) {
@@ -39,30 +49,40 @@ public class AutoClickCommands implements CommandExecutor {
                                         p.sendMessage(ChatColor.RED + "Poxa garotinho, Não pode hitar o amiguinho não...");
                                         break;
                                     }
-                                    else if(target instanceof ComplexLivingEntity) {
+                                    else if  (target instanceof ComplexLivingEntity) {
                                         ((ComplexLivingEntity) target).damage(dmg);
                                     }
                                 }
                             }
-                        }.runTaskLater(Coffe_Autoclick.getInstance(), 20L * time);
-                }
+                        }, 0L, 20L * time);
+                    }
                 } else {
+
                     p.sendMessage(ChatColor.RED + "Você não tem permissão!");
+
                     return true;
                 }
 
                 if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+
                     if (p.hasPermission("autoclick.reload")) {
+
                         p.sendMessage(ChatColor.GREEN + "Config foi recarregado");
+
                         Coffe_Autoclick.getInstance().reloadConfig();
+
                         config = Coffe_Autoclick.getInstance().getConfig(); // Atualiza a configuração
+
                     } else {
+
                         p.sendMessage(ChatColor.RED + "Você não tem permissão!");
+
                         return true;
                     }
                 }
             }
         } else {
+
             sender.sendMessage(ChatColor.RED + "Apenas para jogadores in-game.");
         }
         return false;
