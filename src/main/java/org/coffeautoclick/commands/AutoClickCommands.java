@@ -16,10 +16,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.coffeautoclick.Coffe_Autoclick;
 
 public class AutoClickCommands implements CommandExecutor {
     FileConfiguration config = Coffe_Autoclick.getInstance().getConfig();
+    public static int souls;
+    public static BukkitTask task;
+    public static int i;
+    BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
@@ -36,15 +41,15 @@ public class AutoClickCommands implements CommandExecutor {
 
                         int time = config.getInt("autoclick.time-of-click");
 
-                        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
-                        scheduler.runTaskTimer(Coffe_Autoclick.getInstance(), new Runnable(){
+                        task = scheduler.runTaskTimer(Coffe_Autoclick.getInstance(), new Runnable(){
 
                             @Override
                             public void run() {
                                 for (Entity target : p.getNearbyEntities(d, d, d)) {
                                     if (target instanceof LivingEntity) {
                                         ((LivingEntity) target).damage(dmg);
+                                        Coffe_Autoclick.players.put(p.getUniqueId(), p);
                                     } else if (target instanceof Player){
                                         p.sendMessage(ChatColor.RED + "Poxa garotinho, Não pode hitar o amiguinho não...");
                                         break;
@@ -56,35 +61,45 @@ public class AutoClickCommands implements CommandExecutor {
                             }
                         }, 0L, 20L * time);
                     }
-                } else {
-
-                    p.sendMessage(ChatColor.RED + "Você não tem permissão!");
-
-                    return true;
-                }
-
-                if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-
-                    if (p.hasPermission("autoclick.reload")) {
-
-                        p.sendMessage(ChatColor.GREEN + "Config foi recarregado");
-
-                        Coffe_Autoclick.getInstance().reloadConfig();
-
-                        config = Coffe_Autoclick.getInstance().getConfig(); // Atualiza a configuração
-
-                    } else {
+                    }
+                else {
 
                         p.sendMessage(ChatColor.RED + "Você não tem permissão!");
 
                         return true;
                     }
-                }
-            }
-        } else {
+                    if (args[0].equalsIgnoreCase("off")) {
+                        if (p.hasPermission("autoclick.off")) {
+                            p.sendMessage(ChatColor.GREEN + "Autoclick desativado!");
+                            task.cancel();
+                        }
+                        else {
+                            p.sendMessage(ChatColor.RED + "Você não tem permissão!");
+                        }
+                    }
 
-            sender.sendMessage(ChatColor.RED + "Apenas para jogadores in-game.");
-        }
+                    if (args[0].equalsIgnoreCase("reload")) {
+
+                        if (p.hasPermission("autoclick.reload")) {
+
+                            p.sendMessage(ChatColor.GREEN + "Config foi recarregado");
+
+                            Coffe_Autoclick.getInstance().reloadConfig();
+
+                            config = Coffe_Autoclick.getInstance().getConfig(); // Atualiza a configuração
+
+                        } else {
+
+                            p.sendMessage(ChatColor.RED + "Você não tem permissão!");
+
+                            return true;
+                        }
+                    }
+            }
+            } else {
+
+                sender.sendMessage(ChatColor.RED + "Apenas para jogadores in-game.");
+            }
         return false;
     }
 }
