@@ -1,0 +1,6 @@
+name: Coffe-Autoclick
+version: '${project.version}'
+main: org.coffeautoclick.Coffe_Autoclick
+commands:
+  autoclick:
+    description: 'Causa dano em entidades proximas!'
