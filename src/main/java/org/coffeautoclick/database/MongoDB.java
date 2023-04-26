@@ -17,8 +17,8 @@ public class MongoDB {
     public static void connection() {
         try {
             String user = "localhost";
-            int port = 27111;
-            String url = "mongodb://localhost:27017/";
+            int port = 27017;
+            String url = "mongodb://localhost:27017/Coffe-Autoclick";
             mongoClient = MongoClients.create(url);
             database = mongoClient.getDatabase("Coffe-Autoclick");
             collection = database.getCollection("souls");

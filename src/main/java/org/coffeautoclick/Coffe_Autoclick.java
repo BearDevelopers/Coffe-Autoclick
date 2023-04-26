@@ -19,6 +19,7 @@ public final class Coffe_Autoclick extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        MongoDB.connection();
         instance=this;
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[Coffe-AutoClick]  " + ChatColor.GREEN + "Iniciado com sucesso");
         saveDefaultConfig();
@@ -26,7 +27,6 @@ public final class Coffe_Autoclick extends JavaPlugin {
         registerCommands();
         PluginManager pl = Bukkit.getPluginManager();
         pl.registerEvents(new EntityDeathListener(), this);
-        MongoDB.connection();
     }
 
     @Override

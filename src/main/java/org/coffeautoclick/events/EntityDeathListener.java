@@ -20,27 +20,31 @@ public class EntityDeathListener implements Listener {
         Player p = e.getEntity().getKiller();
         int i = AutoClickCommands.i;
         i++;
+        Document query = new Document("name", p.getName());
+        Document result = (Document) MongoDB.getDocument().find(query).first();
         if (Coffe_Autoclick.players.containsKey(p)) {
             Document doc = new Document()
                     .append("name", p.getName())
                     .append("souls", i);
             MongoDB.getDocument().insertOne((Document) doc);
         }
-        Document query = new Document("name", p.getName());
-        Document result = (Document) MongoDB.getDocument().find(query).first();
+        else {
 
-        sendPlayerTitle(p.getPlayer(), "Parabens!", "Foi adicionado + 1 a sua quantidade de almas");
+            p.sendMessage(ChatColor.RED + "Parabens!");
+            p.sendMessage("Foi adicionado + 1 a sua quantidade de almas");
+
+        }
         if (result != null) {
             int souls = result.getInteger("souls", 0);
             p.sendMessage(ChatColor.RED + "Agora você está com " + souls);
         }
+        else {
+            int souls = result.getInteger("souls");
+            p.sendMessage("Agora você está com " + souls);
+        }
     }
-    public void sendPlayerTitle(Player player, String title, String subtitle) {
-        try {
-            player.sendTitle(title, subtitle);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void sendTitle() {
+        Object handle = player.getClass().getMethod("getHandle").invoke(player);
+        Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
     }
 }
